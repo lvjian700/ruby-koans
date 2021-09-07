@@ -30,7 +30,30 @@ require File.expand_path(File.dirname(__FILE__) + '/neo')
 # Your goal is to write the score method.
 
 def score(dice)
-  # You need to write this method
+  return 0 if dice.empty?
+  dict = { 1 => 100, 5 => 50 }
+
+  grouped = dice.group_by { |i| i }
+
+  count_triple = proc { |num, values|
+    ret = 0
+    ret += case num
+    when 1
+      1000
+    else
+      100 * num
+    end
+
+    ret += (values.size - 3) * dict.fetch(num, 0)
+  }
+
+  grouped.reduce(0) do |sum, (key, value)|
+    if value.size >= 3
+      sum += count_triple.call(key, value)
+    else
+      sum += dict.fetch(key, 0) * value.size
+    end
+  end
 end
 
 class AboutScoringProject < Neo::Koan
